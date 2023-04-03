@@ -3,14 +3,23 @@ before:
     - go mod tidy
 
 builds:
-  - id: lightbulb
-    main: ./lightbulb/lightbulb.go
+  - main: ./lightbulb/lightbulb
+    id: lightbulb
+    binary: lightbulb
     env:
       - CGO_ENABLED=0
     goos:
       - linux
       - darwin
-
+  - main: ./switch/switch
+    id: switch
+    binary: switch
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+ 
 archives:
   - format: tar.gz
     # this name template makes the OS and Arch compatible with the results of uname.
