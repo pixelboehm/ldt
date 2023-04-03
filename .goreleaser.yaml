@@ -34,13 +34,27 @@ archives:
     format_overrides:
     - goos: windows
       format: zip
+
 checksum:
   name_template: 'checksums.txt'
+
 snapshot:
   name_template: "{{ incpatch .Version }}-next"
+
 changelog:
   sort: asc
   filters:
     exclude:
       - '^docs:'
       - '^test:'
+
+brews:
+  - name: ldt
+    homepage: https://github.com/pixelboehm/ldt
+    tap:
+      owner: "{{ .Env.MAINTAINER }}"
+      name: homebrew-ldt
+    commit_author:
+      name: "{{ .Env.MAINTAINER }}"
+      email: "{{ .Env.MAIL }}"
+    folder: Formula
