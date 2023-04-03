@@ -21,19 +21,30 @@ builds:
       - darwin
  
 archives:
-  - format: tar.gz
+  - id: lightbulb
+    builds:
+      - lightbulb
+    format: tar.gz
     # this name template makes the OS and Arch compatible with the results of uname.
     name_template: >-
-      {{ .ProjectName }}_
+      lightbulb_
       {{- title .Os }}_
       {{- if eq .Arch "amd64" }}x86_64
       {{- else if eq .Arch "386" }}i386
       {{- else }}{{ .Arch }}{{ end }}
       {{- if .Arm }}v{{ .Arm }}{{ end }}
-    # use zip for windows archives
-    format_overrides:
-    - goos: windows
-      format: zip
+  - id: switch
+    builds:
+      - switch
+    format: tar.gz
+    # this name template makes the OS and Arch compatible with the results of uname.
+    name_template: >-
+      switch_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }} 
 
 checksum:
   name_template: 'checksums.txt'
@@ -49,7 +60,20 @@ changelog:
       - '^test:'
 
 brews:
-  - name: ldt
+  - name: lightbulb
+    ids: 
+    - lightbulb
+    homepage: https://github.com/pixelboehm/ldt
+    tap:
+      owner: "{{ .Env.MAINTAINER }}"
+      name: homebrew-ldt
+    commit_author:
+      name: "{{ .Env.MAINTAINER }}"
+      email: "{{ .Env.MAIL }}"
+    folder: Formula
+  - name: switch
+    ids: 
+    - switch
     homepage: https://github.com/pixelboehm/ldt
     tap:
       owner: "{{ .Env.MAINTAINER }}"
