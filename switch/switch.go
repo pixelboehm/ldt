@@ -26,7 +26,7 @@ func main() {
 	})
 
 	// configure the ip transport
-	config := hc.Config{Pin: "00000000"}
+	config := hc.Config{Pin: "00000009"}
 	t, err := hc.NewIPTransport(config, ac.Accessory)
 	if err != nil {
 		log.Panic(err)
