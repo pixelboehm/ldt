@@ -26,7 +26,10 @@ func main() {
 	})
 
 	// configure the ip transport
-	config := hc.Config{Pin: "00000009"}
+	config := hc.Config{
+		Pin:         "00000009",
+		StoragePath: "/usr/local/etc/orchestration-manager/" + info.Name,
+	}
 	t, err := hc.NewIPTransport(config, ac.Accessory)
 	if err != nil {
 		log.Panic(err)
