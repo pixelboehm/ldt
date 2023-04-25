@@ -3,7 +3,7 @@ before:
     - go mod tidy
 
 builds:
-  - main: ./lightbulb/lightbulb.go
+  - main: ./ldts/lightbulb/lightbulb.go
     id: lightbulb
     binary: lightbulb
     env:
@@ -11,7 +11,7 @@ builds:
     goos:
       - linux
       - darwin
-  - main: ./switch/switch.go
+  - main: ./ldts/switch/switch.go
     id: switch
     binary: switch
     env:
