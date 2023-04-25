@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/brutella/hc"
 	"github.com/brutella/hc/accessory"
@@ -28,7 +29,7 @@ func main() {
 	// configure the ip transport
 	config := hc.Config{
 		Pin:         "00000009",
-		StoragePath: "/usr/local/etc/orchestration-manager/" + info.Name,
+		StoragePath: "/usr/local/etc/orchestration-manager/" + info.Name + "_" + os.Args[1],
 	}
 	t, err := hc.NewIPTransport(config, ac.Accessory)
 	if err != nil {
