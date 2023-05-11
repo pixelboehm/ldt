@@ -25,6 +25,10 @@ archives:
     builds:
       - lightbulb
     format: tar.gz
+    files: 
+      - src: ldts/lightbulb/wotm/description.json
+        dst: wotm
+        strip_parent: true
     # this name template makes the OS and Arch compatible with the results of uname.
     name_template: >-
       lightbulb_
@@ -37,6 +41,10 @@ archives:
     builds:
       - switch
     format: tar.gz
+    files:
+      - src: ldts/switch/wotm/description.json
+        dst: wotm
+        strip_parent: true
     # this name template makes the OS and Arch compatible with the results of uname.
     name_template: >-
       switch_
