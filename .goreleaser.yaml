@@ -71,6 +71,8 @@ brews:
       name: "{{ .Env.MAINTAINER }}"
       email: "{{ .Env.MAIL }}"
     folder: Formula
+    install: |
+      bin.install "lightbulb"
   - name: switch
     ids: 
     - switch
@@ -82,3 +84,5 @@ brews:
       name: "{{ .Env.MAINTAINER }}"
       email: "{{ .Env.MAIL }}"
     folder: Formula
+    install: |
+      bin.install "switch"
