@@ -4,11 +4,15 @@ import (
 	"log"
 	"os"
 
+	pcl "go-ldts/pcl"
+
 	"github.com/brutella/hc"
 	"github.com/brutella/hc/accessory"
 )
 
 func main() {
+	go pcl.Run(os.Args[2])
+
 	// create an accessory
 	info := accessory.Info{
 		Name:             "Awesome Lightbulb",
