@@ -19,7 +19,7 @@
             "observable": false,
             "type": "string",
             "forms": [{
-                "href": "https://mylamp.example.com/status",
+                "href": "{{ . }}/status",
                 "contentType": "application/json",
                 "htv:methodName": "GET",
                 "op": "readproperty"
@@ -32,7 +32,7 @@
             "idempotent": false,
             "safe": false,
             "forms": [{
-                "href": "https://mylamp.example.com/toggle",
+                "href": "{{ . }}/toggle",
                 "contentType": "application/json",
                 "htv:methodName": "POST",
                 "op": "invokeaction"
@@ -43,7 +43,7 @@
         "overheating":{
             "data": {"type": "string"},
             "forms": [{
-                "href": "https://mylamp.example.com/oh",
+                "href": "{{ . }}/oh",
                 "contentType": "application/json",
                 "subprotocol": "longpoll",
                 "op": "subscribeevent"
