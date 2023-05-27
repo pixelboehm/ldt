@@ -44,9 +44,9 @@ func AddHTTPHandler(router *http.ServeMux, route string, handler func(w http.Res
 }
 
 func addIPToDescription(ipAddress string) error {
-	var description string = "wotm/description.json"
+	var description string = "/usr/local/etc/orchestration-manager/pixelboehm/lightbulb/latest/wotm/description.json"
 
-	t, err := template.ParseFiles("wotm/description.json")
+	t, err := template.ParseFiles("/usr/local/etc/orchestration-manager/pixelboehm/lightbulb/latest/wotm/description.json")
 	if err != nil {
 		return errors.New(fmt.Sprint("PCL: Failed to parse template: ", err))
 	}
@@ -69,7 +69,7 @@ func getIPAddress() (string, error) {
 
 	ipAddr, err := net.ResolveIPAddr("ip4", hostname)
 	if err != nil {
-		return "", errors.New(fmt.Sprint("PCL: Failed wo obtain Host-IP Address"))
+		return "", errors.New(fmt.Sprint("PCL: Failed wo obtain Host-IP Address", err))
 	}
 	return ipAddr.IP.String(), nil
 }
