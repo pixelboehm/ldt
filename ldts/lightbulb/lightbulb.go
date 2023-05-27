@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -17,6 +18,9 @@ var Device_address string
 
 func main() {
 	router := pcl.SetupRouter()
+	client := &http.Client{
+		Timeout: 10 * time.Second,
+	}
 	pcl.AddHTTPHandler(router, "/register", registerDevice)
 
 	go pcl.Run(router, os.Args[2])
@@ -33,9 +37,9 @@ func main() {
 	ac := accessory.NewLightbulb(info)
 	ac.Lightbulb.On.OnValueRemoteUpdate(func(on bool) {
 		if on == true {
-			turnOn()
+			turnOn(client)
 		} else {
-			turnOff()
+			turnOff(client)
 		}
 	})
 
@@ -57,28 +61,28 @@ func main() {
 	t.Start()
 }
 
-func turnOn() {
-	req, err := http.NewRequest(http.MethodGet, Device_address+"/on", nil)
+func turnOn(client *http.Client) {
+	req, err := http.NewRequest(http.MethodGet, "http://"+Device_address+"/on", nil)
 	if err != nil {
 		log.Println("Failed to create request")
 		return
 	}
-	_, err = http.DefaultClient.Do(req)
+	_, err = client.Do(req)
 	if err != nil {
-		log.Println("Failed to do the request")
+		log.Println(fmt.Sprint("Failed to do the request", err))
 	}
 	log.Println("Send turn On Command")
 }
 
-func turnOff() {
-	req, err := http.NewRequest(http.MethodGet, Device_address+"/off", nil)
+func turnOff(client *http.Client) {
+	req, err := http.NewRequest(http.MethodGet, "http://"+Device_address+"/off", nil)
 	if err != nil {
 		log.Println("Failed to create request")
 		return
 	}
-	_, err = http.DefaultClient.Do(req)
+	_, err = client.Do(req)
 	if err != nil {
-		log.Println("Failed to do the request")
+		log.Println(fmt.Sprint("Failed to do the request", err))
 	}
 	log.Println("Send turn off command")
 }
@@ -95,7 +99,7 @@ func registerDevice(w http.ResponseWriter, r *http.Request) {
 
 func printDeviceAddress() {
 	for {
-		ticker := time.NewTicker(2 * time.Second)
+		ticker := time.NewTicker(4 * time.Second)
 		log.Printf("Device Address: %s", Device_address)
 		<-ticker.C
 	}
