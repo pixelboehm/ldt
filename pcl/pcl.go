@@ -11,8 +11,12 @@ import (
 	"strconv"
 )
 
-func Run(number string) {
+func SetupRouter() *http.ServeMux {
 	router := http.NewServeMux()
+	return router
+}
+
+func Run(router *http.ServeMux, number string) {
 
 	port, err := strconv.Atoi(number)
 	if err != nil {
@@ -35,8 +39,8 @@ func Run(number string) {
 	}
 }
 
-func addHTTPHandler(router *http.ServeMux, route string, handler func(w http.ResponseWriter, r *http.Request)) {
-	router.HandleFunc("/", handler)
+func AddHTTPHandler(router *http.ServeMux, route string, handler func(w http.ResponseWriter, r *http.Request)) {
+	router.HandleFunc(route, handler)
 }
 
 func addIPToDescription(ipAddress string) error {
