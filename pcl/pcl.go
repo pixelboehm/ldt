@@ -16,7 +16,7 @@ func SetupRouter() *http.ServeMux {
 	return router
 }
 
-func Run(router *http.ServeMux, number string) {
+func Run(router *http.ServeMux, number, storatePath string) {
 
 	port, err := strconv.Atoi(number)
 	if err != nil {
@@ -28,7 +28,7 @@ func Run(router *http.ServeMux, number string) {
 		panic(err)
 	}
 
-	if err := addIPToDescription(ip); err != nil {
+	if err := addIPToDescription(ip, storatePath); err != nil {
 		panic(err)
 	}
 
@@ -43,10 +43,10 @@ func AddHTTPHandler(router *http.ServeMux, route string, handler func(w http.Res
 	router.HandleFunc(route, handler)
 }
 
-func addIPToDescription(ipAddress string) error {
-	var description string = "/usr/local/etc/orchestration-manager/pixelboehm/lightbulb/latest/wotm/description.json"
+func addIPToDescription(ipAddress, storatePath string) error {
+	var description string = storatePath + "/wotm/description.json"
 
-	t, err := template.ParseFiles("/usr/local/etc/orchestration-manager/pixelboehm/lightbulb/latest/wotm/description.json")
+	t, err := template.ParseFiles(storatePath + "/wotm/description.json")
 	if err != nil {
 		return errors.New(fmt.Sprint("PCL: Failed to parse template: ", err))
 	}

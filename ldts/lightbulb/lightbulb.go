@@ -23,9 +23,6 @@ func main() {
 	}
 	pcl.AddHTTPHandler(router, "/register", registerDevice)
 
-	go pcl.Run(router, os.Args[2])
-	go printDeviceAddress()
-
 	// create an accessory
 	info := accessory.Info{
 		Name:             "Awesome Lightbulb",
@@ -58,6 +55,9 @@ func main() {
 		os.Exit(1)
 	})
 
+	go pcl.Run(router, os.Args[2], config.StoragePath)
+	go printDeviceAddress()
+
 	t.Start()
 }
 
@@ -71,7 +71,7 @@ func turnOn(client *http.Client) {
 	if err != nil {
 		log.Println(fmt.Sprint("Failed to do the request", err))
 	}
-	log.Println("Send turn On Command")
+	log.Println("Lightbulb: Turn On")
 }
 
 func turnOff(client *http.Client) {
@@ -84,7 +84,7 @@ func turnOff(client *http.Client) {
 	if err != nil {
 		log.Println(fmt.Sprint("Failed to do the request", err))
 	}
-	log.Println("Send turn off command")
+	log.Println("Lightbulb: Turn Off")
 }
 
 func registerDevice(w http.ResponseWriter, r *http.Request) {
