@@ -100,7 +100,11 @@ func registerDevice(w http.ResponseWriter, r *http.Request) {
 func printDeviceAddress() {
 	for {
 		ticker := time.NewTicker(4 * time.Second)
-		log.Printf("Device Address: %s", Device_address)
+		if Device_address == "" {
+			log.Printf("Device Address: <none>")
+		} else {
+			log.Printf("Device Address: %s", Device_address)
+		}
 		<-ticker.C
 	}
 }
