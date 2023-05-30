@@ -1,53 +1,40 @@
 {
-    "@context": [
-        "http://w3.org/ns/td",
-        { "saref": "https://w3id.org/saref#" },
-        { "htv": "http://www.w3.org/2011/http#" }
-    ],
-    "@type": [ "Thing", "saref#LightingDevice" ],
-    "id": "urn:dev:wot:com:example:servient:lamp",
-    "name": "Awesome Lightbulb",
+    "@context": "https://www.w3.org/2019/wot/td/v1",
+    "id": "urn:dev:ops:32473-WoTLamp-1234",
+    "title": "Awesome Lightbulb",
     "securityDefinitions": {
         "basic_sc": {"scheme": "basic", "in":"header"}
     },
     "security": ["basic_sc"],
     "properties": {
         "status" : {
-            "@type": "saref#OnOffState",
-            "readOnly": true,
-            "writeOnly": false,
-            "observable": false,
             "type": "string",
-            "forms": [{
-                "href": "{{ . }}/status",
-                "contentType": "application/json",
-                "htv:methodName": "GET",
-                "op": "readproperty"
-            }]
+            "forms": [{"href": "{{ .Device }}/status"}]
+        },
+        "deviceAddress": {
+            "type": "string",
+            "value": "{{ .Device }}"
+        },
+        "ldtAddress": {
+            "type": "string",
+            "value": "{{ .Ldt }}"
         }
     },
     "actions": {
-        "toggle" : {
-            "@type": "saref#ToggleCommand",
-            "idempotent": false,
-            "safe": false,
-            "forms": [{
-                "href": "{{ . }}/toggle",
-                "contentType": "application/json",
-                "htv:methodName": "POST",
-                "op": "invokeaction"
-            }]
+        "on" : {
+            "forms": [{"href": "{{ .Device }}/on"}]
+        },
+        "off" : {
+            "forms": [{"href": "{{ .Device }}/off"}]
         }
     },
     "events":{
         "overheating":{
             "data": {"type": "string"},
             "forms": [{
-                "href": "{{ . }}/oh",
-                "contentType": "application/json",
-                "subprotocol": "longpoll",
-                "op": "subscribeevent"
+                "href": "{{ .Device }}/oh",
+                "subprotocol": "longpoll"
             }]
         }
     }
-} 
+}
