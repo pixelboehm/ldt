@@ -14,13 +14,20 @@ import (
 	"github.com/brutella/hc/accessory"
 )
 
-var Device_address string
+var device_address string
+var config hc.Config
+var ip_address string
 
 func main() {
+	var ldt_specific_folder string = os.Args[1]
+	var port string = os.Args[2]
+	device_address = os.Args[3]
+
 	router := pcl.SetupRouter()
 	client := &http.Client{
-		Timeout: 10 * time.Second,
+		Timeout: 5 * time.Second,
 	}
+
 	pcl.AddHTTPHandler(router, "/register", registerDevice)
 
 	// create an accessory
@@ -41,9 +48,9 @@ func main() {
 	})
 
 	// configure the ip transport
-	config := hc.Config{
+	config = hc.Config{
 		Pin:         "00000009",
-		StoragePath: "/usr/local/etc/orchestration-manager/" + os.Args[1],
+		StoragePath: "/usr/local/etc/orchestration-manager/" + ldt_specific_folder,
 	}
 	t, err := hc.NewIPTransport(config, ac.Accessory)
 	if err != nil {
@@ -55,14 +62,18 @@ func main() {
 		os.Exit(1)
 	})
 
-	go pcl.Run(router, os.Args[2], config.StoragePath)
+	ip_address, err = pcl.GetIPAddress()
+	if err != nil {
+		panic(err)
+	}
+	go pcl.Run(router, ip_address, port)
 	go printDeviceAddress()
 
 	t.Start()
 }
 
 func turnOn(client *http.Client) {
-	req, err := http.NewRequest(http.MethodGet, "http://"+Device_address+"/on", nil)
+	req, err := http.NewRequest(http.MethodGet, "http://"+device_address+"/on", nil)
 	if err != nil {
 		log.Println("Failed to create request")
 		return
@@ -75,7 +86,7 @@ func turnOn(client *http.Client) {
 }
 
 func turnOff(client *http.Client) {
-	req, err := http.NewRequest(http.MethodGet, "http://"+Device_address+"/off", nil)
+	req, err := http.NewRequest(http.MethodGet, "http://"+device_address+"/off", nil)
 	if err != nil {
 		log.Println("Failed to create request")
 		return
@@ -88,22 +99,24 @@ func turnOff(client *http.Client) {
 }
 
 func registerDevice(w http.ResponseWriter, r *http.Request) {
+	log.Println("A new Device wants to register")
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Println("Failed to read request body")
 		return
 	}
-	Device_address = string(body)
+	device_address = string(body)
+	pcl.AddIPToDescription(ip_address, device_address, config.StoragePath)
 	w.Write([]byte("ack"))
 }
 
 func printDeviceAddress() {
 	for {
 		ticker := time.NewTicker(4 * time.Second)
-		if Device_address == "" {
+		if device_address == "" {
 			log.Printf("Device Address: <none>")
 		} else {
-			log.Printf("Device Address: %s", Device_address)
+			log.Printf("Device Address: %s", device_address)
 		}
 		<-ticker.C
 	}

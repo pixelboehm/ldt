@@ -3,33 +3,28 @@ package pcl
 import (
 	"errors"
 	"fmt"
-	"html/template"
 	"log"
 	"net"
 	"net/http"
 	"os"
 	"strconv"
+	"text/template"
 )
+
+type Data struct {
+	Device string
+	Ldt    string
+}
 
 func SetupRouter() *http.ServeMux {
 	router := http.NewServeMux()
 	return router
 }
 
-func Run(router *http.ServeMux, number, storatePath string) {
-
-	port, err := strconv.Atoi(number)
+func Run(router *http.ServeMux, ip, port_number string) {
+	port, err := strconv.Atoi(port_number)
 	if err != nil {
 		panic("unable to convert port, please use a number as the second parameter")
-	}
-
-	ip, err := getIPAddress()
-	if err != nil {
-		panic(err)
-	}
-
-	if err := addIPToDescription(ip, storatePath); err != nil {
-		panic(err)
 	}
 
 	var addr string = fmt.Sprintf(":%d", port)
@@ -43,8 +38,14 @@ func AddHTTPHandler(router *http.ServeMux, route string, handler func(w http.Res
 	router.HandleFunc(route, handler)
 }
 
-func addIPToDescription(ipAddress, storatePath string) error {
+func AddIPToDescription(ldt_address, device_address, storatePath string) error {
 	var description string = storatePath + "/wotm/description.json"
+	log.Println("writing description: ", description)
+
+	Temp := Data{
+		Device: device_address,
+		Ldt:    ldt_address,
+	}
 
 	t, err := template.ParseFiles(storatePath + "/wotm/description.json")
 	if err != nil {
@@ -57,14 +58,14 @@ func addIPToDescription(ipAddress, storatePath string) error {
 	}
 	defer output.Close()
 
-	err = t.Execute(output, ipAddress)
+	err = t.Execute(output, Temp)
 	if err != nil {
 		return errors.New(fmt.Sprint("PCL: Failed to write into template: ", err))
 	}
 	return nil
 }
 
-func getIPAddress() (string, error) {
+func GetIPAddress() (string, error) {
 	hostname, _ := os.Hostname()
 
 	ipAddr, err := net.ResolveIPAddr("ip4", hostname)
