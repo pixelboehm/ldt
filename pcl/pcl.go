@@ -12,9 +12,12 @@ import (
 )
 
 type Data struct {
-	Device string
-	Ldt    string
+	Device_IPv4 string
+	Device_MAC  string
+	Ldt_IPv4    string
 }
+
+var port int
 
 func SetupRouter() *http.ServeMux {
 	router := http.NewServeMux()
@@ -22,7 +25,8 @@ func SetupRouter() *http.ServeMux {
 }
 
 func Run(router *http.ServeMux, ip, port_number string) {
-	port, err := strconv.Atoi(port_number)
+	var err error
+	port, err = strconv.Atoi(port_number)
 	if err != nil {
 		panic("unable to convert port, please use a number as the second parameter")
 	}
@@ -38,21 +42,21 @@ func AddHTTPHandler(router *http.ServeMux, route string, handler func(w http.Res
 	router.HandleFunc(route, handler)
 }
 
-func AddIPToDescription(ldt_address, device_address, storatePath string) error {
+func AddIPToDescription(ldt_address, device_IPv4, device_MAC, storatePath string) error {
 	var description string = storatePath + "/wotm/description.json"
-	log.Println("writing description: ", description)
 
 	Temp := Data{
-		Device: device_address,
-		Ldt:    ldt_address,
+		Device_IPv4: device_IPv4,
+		Device_MAC:  device_MAC,
+		Ldt_IPv4:    ldt_address + ":" + strconv.Itoa(port),
 	}
 
-	t, err := template.ParseFiles(storatePath + "/wotm/description.json")
+	t, err := template.ParseFiles(description)
 	if err != nil {
 		return errors.New(fmt.Sprint("PCL: Failed to parse template: ", err))
 	}
 
-	output, err := os.OpenFile(description, os.O_RDWR, 0666)
+	output, err := os.Create(description)
 	if err != nil {
 		return errors.New(fmt.Sprint("PCL: Failed to open description file: ", err))
 	}

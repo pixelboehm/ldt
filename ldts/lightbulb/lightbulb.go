@@ -1,8 +1,8 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -14,14 +14,14 @@ import (
 	"github.com/brutella/hc/accessory"
 )
 
-var device_address string
+var device_IPv4 string
+var ldt_IPv4 string
 var config hc.Config
-var ip_address string
 
 func main() {
 	var ldt_specific_folder string = os.Args[1]
 	var port string = os.Args[2]
-	device_address = os.Args[3]
+	device_IPv4 = os.Args[3]
 
 	router := pcl.SetupRouter()
 	client := &http.Client{
@@ -62,18 +62,18 @@ func main() {
 		os.Exit(1)
 	})
 
-	ip_address, err = pcl.GetIPAddress()
+	ldt_IPv4, err = pcl.GetIPAddress()
 	if err != nil {
 		panic(err)
 	}
-	go pcl.Run(router, ip_address, port)
+	go pcl.Run(router, ldt_IPv4, port)
 	go printDeviceAddress()
 
 	t.Start()
 }
 
 func turnOn(client *http.Client) {
-	req, err := http.NewRequest(http.MethodGet, "http://"+device_address+"/on", nil)
+	req, err := http.NewRequest(http.MethodGet, "http://"+device_IPv4+"/on", nil)
 	if err != nil {
 		log.Println("Failed to create request")
 		return
@@ -86,7 +86,7 @@ func turnOn(client *http.Client) {
 }
 
 func turnOff(client *http.Client) {
-	req, err := http.NewRequest(http.MethodGet, "http://"+device_address+"/off", nil)
+	req, err := http.NewRequest(http.MethodGet, "http://"+device_IPv4+"/off", nil)
 	if err != nil {
 		log.Println("Failed to create request")
 		return
@@ -99,24 +99,32 @@ func turnOff(client *http.Client) {
 }
 
 func registerDevice(w http.ResponseWriter, r *http.Request) {
-	log.Println("A new Device wants to register")
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		log.Println("Failed to read request body")
-		return
+	log.Println("A new connection request from a Device arrived!")
+
+	type RequestPayload struct {
+		Device_IPv4 string
+		Device_MAC  string
 	}
-	device_address = string(body)
-	pcl.AddIPToDescription(ip_address, device_address, config.StoragePath)
+
+	var payload RequestPayload
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&payload); err != nil {
+		log.Println("Lightbulb: Decoding Error: ", err)
+	}
+	defer r.Body.Close()
+
+	device_IPv4 = payload.Device_IPv4
+	pcl.AddIPToDescription(ldt_IPv4, payload.Device_IPv4, payload.Device_MAC, config.StoragePath)
 	w.Write([]byte("ack"))
 }
 
 func printDeviceAddress() {
 	for {
 		ticker := time.NewTicker(4 * time.Second)
-		if device_address == "" {
+		if device_IPv4 == "" {
 			log.Printf("Device Address: <none>")
 		} else {
-			log.Printf("Device Address: %s", device_address)
+			log.Printf("Device Address: %s", device_IPv4)
 		}
 		<-ticker.C
 	}

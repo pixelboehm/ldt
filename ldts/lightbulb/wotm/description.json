@@ -9,30 +9,34 @@
     "properties": {
         "status" : {
             "type": "string",
-            "forms": [{"href": "{{ .Device }}/status"}]
+            "forms": [{"href": "{{ .Device_IPv4 }}/status"}]
         },
-        "deviceAddress": {
+        "deviceIPv4Address": {
             "type": "string",
-            "value": "{{ .Device }}"
+            "value": "{{ .Device_IPv4 }}"
         },
-        "ldtAddress": {
+        "deviceMACAddress": {
             "type": "string",
-            "value": "{{ .Ldt }}"
+            "value": "{{ .Device_MAC }}"
+        },
+        "ldtIPv4Address": {
+            "type": "string",
+            "value": "{{ .Ldt_IPv4 }}"
         }
     },
     "actions": {
         "on" : {
-            "forms": [{"href": "{{ .Device }}/on"}]
+            "forms": [{"href": "{{ .Device_IPv4 }}/on"}]
         },
         "off" : {
-            "forms": [{"href": "{{ .Device }}/off"}]
+            "forms": [{"href": "{{ .Device_IPv4 }}/off"}]
         }
     },
     "events":{
         "overheating":{
             "data": {"type": "string"},
             "forms": [{
-                "href": "{{ .Device }}/oh",
+                "href": "{{ .Device_IPv4 }}/oh",
                 "subprotocol": "longpoll"
             }]
         }
