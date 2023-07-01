@@ -12,6 +12,7 @@ import (
 )
 
 type Data struct {
+	Device_Name string
 	Device_IPv4 string
 	Device_MAC  string
 	Ldt_IPv4    string
@@ -42,10 +43,11 @@ func AddHTTPHandler(router *http.ServeMux, route string, handler func(w http.Res
 	router.HandleFunc(route, handler)
 }
 
-func WriteAddressesToDescription(ldt_address, device_IPv4, device_MAC, storatePath string) error {
+func WriteAddressesToDescription(ldt_address, device_Name, device_IPv4, device_MAC, storatePath string) error {
 	var description string = storatePath + "/wotm/description.json"
 
 	Temp := Data{
+		Device_Name: device_Name,
 		Device_IPv4: device_IPv4,
 		Device_MAC:  device_MAC,
 		Ldt_IPv4:    ldt_address + ":" + strconv.Itoa(port),

@@ -17,11 +17,13 @@ import (
 var device_IPv4 string
 var ldt_IPv4 string
 var config hc.Config
+var ldt_name string
 
 func main() {
 	var ldt_specific_folder string = os.Args[1]
 	var port string = os.Args[2]
 	device_IPv4 = os.Args[3]
+	ldt_name = os.Args[4]
 
 	router := pcl.SetupRouter()
 	client := &http.Client{
@@ -32,7 +34,7 @@ func main() {
 
 	// create an accessory
 	info := accessory.Info{
-		Name:             "Awesome Lightbulb",
+		Name:             "Lightbulb " + ldt_name,
 		SerialNumber:     "042DH-01BCN3",
 		Manufacturer:     "Apple",
 		Model:            "AB",
@@ -50,7 +52,7 @@ func main() {
 	// configure the ip transport
 	config = hc.Config{
 		Pin:         "00000009",
-		StoragePath: "/usr/local/etc/orchestration-manager/" + ldt_specific_folder,
+		StoragePath: ldt_specific_folder,
 	}
 	t, err := hc.NewIPTransport(config, ac.Accessory)
 	if err != nil {
@@ -114,7 +116,7 @@ func registerDevice(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	device_IPv4 = payload.Device_IPv4
-	pcl.WriteAddressesToDescription(ldt_IPv4, payload.Device_IPv4, payload.Device_MAC, config.StoragePath)
+	pcl.WriteAddressesToDescription(ldt_IPv4, ldt_name, payload.Device_IPv4, payload.Device_MAC, config.StoragePath)
 	w.Write([]byte("ack"))
 }
 
