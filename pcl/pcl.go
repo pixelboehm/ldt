@@ -42,7 +42,7 @@ func AddHTTPHandler(router *http.ServeMux, route string, handler func(w http.Res
 	router.HandleFunc(route, handler)
 }
 
-func AddIPToDescription(ldt_address, device_IPv4, device_MAC, storatePath string) error {
+func WriteAddressesToDescription(ldt_address, device_IPv4, device_MAC, storatePath string) error {
 	var description string = storatePath + "/wotm/description.json"
 
 	Temp := Data{

@@ -114,7 +114,7 @@ func registerDevice(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	device_IPv4 = payload.Device_IPv4
-	pcl.AddIPToDescription(ldt_IPv4, payload.Device_IPv4, payload.Device_MAC, config.StoragePath)
+	pcl.WriteAddressesToDescription(ldt_IPv4, payload.Device_IPv4, payload.Device_MAC, config.StoragePath)
 	w.Write([]byte("ack"))
 }
 
