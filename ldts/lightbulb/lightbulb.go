@@ -1,30 +1,34 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
-	pcl "go-ldts/pcl"
+	"go-ldts/pcl"
 	"go-ldts/wotm"
 
-	"github.com/brutella/hc"
-	"github.com/brutella/hc/accessory"
+	"github.com/brutella/hap"
+	"github.com/brutella/hap/accessory"
 )
 
 var device_IPv4 string
 var ldt_IPv4 string
-var config hc.Config
-var ldt_name string
+var ldt_identifier string
+var port string
+var ldt_specific_folder string
 
 func main() {
-	var ldt_specific_folder string = os.Args[1]
-	var port string = os.Args[2]
+	ldt_specific_folder = os.Args[1]
+	port = os.Args[2]
 	device_IPv4 = os.Args[3]
-	ldt_name = os.Args[4]
+	ldt_identifier = os.Args[4]
 
 	router := pcl.SetupRouter()
 	client := &http.Client{
@@ -32,47 +36,43 @@ func main() {
 	}
 
 	pcl.AddHTTPHandler(router, "/register", registerDevice)
-
-	// create an accessory
-	info := accessory.Info{
-		Name:             "Lightbulb " + ldt_name,
-		SerialNumber:     "042DH-01BCN3",
-		Manufacturer:     "Apple",
-		Model:            "AB",
-		FirmwareRevision: "1.0.1",
+	ldt_IPv4, err := pcl.GetIPAddress()
+	if err != nil {
+		panic(err)
 	}
-	ac := accessory.NewLightbulb(info)
-	ac.Lightbulb.On.OnValueRemoteUpdate(func(on bool) {
-		if on == true {
-			turnOn(client)
-		} else {
-			turnOff(client)
-		}
+
+	go pcl.Run(router, ldt_IPv4, port)
+	go printDeviceAddress()
+
+	lightbulb := accessory.NewLightbulb(accessory.Info{
+		Name: ldt_identifier + " " + "Lamp",
 	})
-
-	// configure the ip transport
-	config = hc.Config{
-		Pin:         "00000009",
-		StoragePath: ldt_specific_folder,
-	}
-	t, err := hc.NewIPTransport(config, ac.Accessory)
+	fs := hap.NewFsStore(ldt_specific_folder + "/db")
+	server, err := hap.NewServer(fs, lightbulb.A)
 	if err != nil {
 		log.Panic(err)
 	}
 
-	hc.OnTermination(func() {
-		<-t.Stop()
-		os.Exit(1)
+	c := make(chan os.Signal)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	go func() {
+		<-c
+		signal.Stop(c)
+		cancel()
+	}()
+
+	lightbulb.Lightbulb.On.OnValueRemoteUpdate(func(on bool) {
+		if on == true {
+			turnOn(client)
+			log.Println("Lightbulb is on")
+		} else {
+			turnOff(client)
+			log.Println("Lightbulb is off")
+		}
 	})
-
-	ldt_IPv4, err = pcl.GetIPAddress()
-	if err != nil {
-		panic(err)
-	}
-	go pcl.Run(router, ldt_IPv4, port)
-	go printDeviceAddress()
-
-	t.Start()
+	server.ListenAndServe(ctx)
 }
 
 func turnOn(client *http.Client) {

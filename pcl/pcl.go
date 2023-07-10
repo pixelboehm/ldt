@@ -8,17 +8,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"text/template"
 )
-
-type Data struct {
-	Device_Name string
-	Device_IPv4 string
-	Device_MAC  string
-	Ldt_IPv4    string
-}
-
-var port int
 
 func SetupRouter() *http.ServeMux {
 	router := http.NewServeMux()
@@ -27,13 +17,13 @@ func SetupRouter() *http.ServeMux {
 
 func Run(router *http.ServeMux, ip, port_number string) {
 	var err error
-	port, err = strconv.Atoi(port_number)
+	port, err := strconv.Atoi(port_number)
 	if err != nil {
-		panic("unable to convert port, please use a number as the second parameter")
+		panic("<PCL>: Unable to convert port, please use a number as the second parameter")
 	}
 
 	var addr string = fmt.Sprintf(":%d", port)
-	log.Printf("HTTP serve at %s%s\n", ip, addr)
+	log.Printf("<PCL>: HTTP serve at %s%s\n", ip, addr)
 	if err := http.ListenAndServe(addr, router); err != nil {
 		panic(err)
 	}
@@ -48,7 +38,7 @@ func GetIPAddress() (string, error) {
 
 	ipAddr, err := net.ResolveIPAddr("ip4", hostname)
 	if err != nil {
-		return "", errors.New(fmt.Sprint("PCL: Failed wo obtain Host-IP Address", err))
+		return "", errors.New(fmt.Sprint("<PCL>: Failed wo obtain Host-IP Address", err))
 	}
 	return ipAddr.IP.String(), nil
 }
