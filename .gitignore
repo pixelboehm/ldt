@@ -1,3 +1,4 @@
 out/
+vendor/
 dist/
 *.sh
