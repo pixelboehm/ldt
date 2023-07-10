@@ -9,6 +9,7 @@ import (
 	"time"
 
 	pcl "go-ldts/pcl"
+	"go-ldts/wotm"
 
 	"github.com/brutella/hc"
 	"github.com/brutella/hc/accessory"
@@ -116,7 +117,7 @@ func registerDevice(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	device_IPv4 = payload.Device_IPv4
-	pcl.WriteAddressesToDescription(ldt_IPv4, ldt_name, payload.Device_IPv4, payload.Device_MAC, config.StoragePath)
+	wotm.WriteAddressesToDescription(ldt_IPv4, ldt_identifier, payload.Device_IPv4, payload.Device_MAC, port, ldt_specific_folder)
 	w.Write([]byte("ack"))
 }
 
