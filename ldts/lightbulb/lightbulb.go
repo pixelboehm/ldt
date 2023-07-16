@@ -49,6 +49,7 @@ func main() {
 	})
 	fs := hap.NewFsStore(ldt_specific_folder + "/db")
 	server, err := hap.NewServer(fs, lightbulb.A)
+	server.Pin = "00000009"
 	if err != nil {
 		log.Panic(err)
 	}
