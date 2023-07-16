@@ -50,9 +50,18 @@ func main() {
 	fs := hap.NewFsStore(ldt_specific_folder + "/db")
 	server, err := hap.NewServer(fs, lightbulb.A)
 	server.Pin = "00000009"
+
 	if err != nil {
 		log.Panic(err)
 	}
+
+	lightbulb.Lightbulb.On.OnValueRemoteUpdate(func(on bool) {
+		if on == true {
+			turnOn(client)
+		} else {
+			turnOff(client)
+		}
+	})
 
 	c := make(chan os.Signal)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
@@ -64,15 +73,6 @@ func main() {
 		cancel()
 	}()
 
-	lightbulb.Lightbulb.On.OnValueRemoteUpdate(func(on bool) {
-		if on == true {
-			turnOn(client)
-			log.Println("Lightbulb is on")
-		} else {
-			turnOff(client)
-			log.Println("Lightbulb is off")
-		}
-	})
 	server.ListenAndServe(ctx)
 }
 
