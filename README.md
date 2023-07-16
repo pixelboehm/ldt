@@ -6,6 +6,7 @@ For a complete understanding of the project, please refer to the following repos
 
 - [Orchestration and Deployment Manager](https://github.com/pixelboehm/longevity): Main application that handles the orchestration of LDTs.
 - [LDT Meta Repository](https://github.com/pixelboehm/meta-ldt): Stores a file with links to repositories containing LDTs.
+- [ESP32 Applications](https://github.com/pixelboehm/longevity-esp32): Stores ESP32 applications that are our smart devices.
 - (Optional) [Homebrew-LDT](https://github.com/pixelboehm/homebrew-ldt): Contains Homebrew (outdated) formulas for the ODM and LDTs. The formulas are not up-to-date anymore, but can be enabled through the `.goreleaser.yml` again.
 
 ## Dependencies
