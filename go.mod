@@ -2,10 +2,7 @@ module go-ldts
 
 go 1.19
 
-require (
-	github.com/brutella/hap v0.0.26
-	github.com/brutella/hc v1.2.5
-)
+require github.com/brutella/hap v0.0.26
 
 require (
 	github.com/brutella/dnssd v1.2.7 // indirect

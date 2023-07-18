@@ -11,14 +11,6 @@ builds:
     goos:
       - linux
       - darwin
-  - main: ./ldts/switch/switch.go
-    id: switch
-    binary: switch
-    env:
-      - CGO_ENABLED=0
-    goos:
-      - linux
-      - darwin
  
 archives:
   - id: lightbulb
@@ -32,22 +24,6 @@ archives:
     # this name template makes the OS and Arch compatible with the results of uname.
     name_template: >-
       lightbulb_
-      {{- title .Os }}_
-      {{- if eq .Arch "amd64" }}x86_64
-      {{- else if eq .Arch "386" }}i386
-      {{- else }}{{ .Arch }}{{ end }}
-      {{- if .Arm }}v{{ .Arm }}{{ end }}
-  - id: switch
-    builds:
-      - switch
-    format: tar.gz
-    files:
-      - src: ldts/switch/wotm/description.json
-        dst: wotm
-        strip_parent: true
-    # this name template makes the OS and Arch compatible with the results of uname.
-    name_template: >-
-      switch_
       {{- title .Os }}_
       {{- if eq .Arch "amd64" }}x86_64
       {{- else if eq .Arch "386" }}i386
