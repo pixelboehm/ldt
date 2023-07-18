@@ -23,6 +23,7 @@ var ldt_IPv4 string
 var ldt_identifier string
 var port string
 var ldt_specific_folder string
+var err error
 
 func main() {
 	ldt_specific_folder = os.Args[1]
@@ -36,7 +37,7 @@ func main() {
 	}
 
 	pcl.AddHTTPHandler(router, "/register", registerDevice)
-	ldt_IPv4, err := pcl.GetIPAddress()
+	ldt_IPv4, err = pcl.GetIPAddress()
 	if err != nil {
 		panic(err)
 	}
