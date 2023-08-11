@@ -1,0 +1,32 @@
+{
+    "@context": "https://www.w3.org/2019/wot/td/v1",
+    "id": "urn:dev:ops:32473-WoTSwitch-1234",
+    "title": "Switch {{ .Device_Name }}",
+    "securityDefinitions": {},
+    "security": [],
+    "properties": {
+        "status" : {
+            "type": "string",
+            "forms": [{"href": "{{ .Device_IPv4 }}/status"}]
+        },
+        "deviceIPv4Address": {
+            "type": "string",
+            "value": "{{ .Device_IPv4 }}"
+        },
+        "deviceMACAddress": {
+            "type": "string",
+            "value": "{{ .Device_MAC }}"
+        },
+        "ldtIPv4Address": {
+            "type": "string",
+            "value": "{{ .Ldt_IPv4 }}"
+        }
+    },
+    "actions": {
+        "on" : {
+            "forms": [{"href": "{{ .Device_IPv4 }}/toggle"}]
+        } 
+    },
+    "events":{},
+    "dependencies": {}
+}
